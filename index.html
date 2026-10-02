@@ -357,10 +357,24 @@
                 ctx.shadowColor = "transparent";
                 ctx.fillRect(56, 86, lw, 2);
 
-                // Title: wrap to the same central text area.
+                // Title: derive typography and placement from the live preview.
                 ctx.shadowColor = "rgba(0,0,0,.20)";
-                ctx.font = "700 44px Arial, sans-serif";
-                const maxWidth = 496;
+                const titleEl = document.getElementById("post_title");
+                const coverRect = cover.getBoundingClientRect();
+                const titleRect = titleEl.getBoundingClientRect();
+                const ts = getComputedStyle(titleEl);
+
+                const scaleX = W / coverRect.width;
+                const scaleY = H / coverRect.height;
+                const fontSize = parseFloat(ts.fontSize) * scaleY;
+                const lineH = (parseFloat(ts.lineHeight) || parseFloat(ts.fontSize) * 1.2) * scaleY;
+                const fontWeight = ts.fontWeight || "700";
+                const fontFamily = ts.fontFamily || "Arial, sans-serif";
+                ctx.font = fontWeight + " " + fontSize + "px " + fontFamily;
+
+                const tx = (titleRect.left - coverRect.left) * scaleX;
+                const maxWidth = titleRect.width * scaleX;
+
                 const words = title.split(/\s+/);
                 const lines = [];
                 let line = "";
@@ -369,15 +383,16 @@
                     if (ctx.measureText(test).width > maxWidth && line) {
                         lines.push(line);
                         line = word;
-                    } else line = test;
+                    } else {
+                        line = test;
+                    }
                 }
                 if (line) lines.push(line);
 
-                const lineH = 53;
-                const titleH = lines.length * lineH;
+                const titleH = Math.min(lines.length, 5) * lineH;
                 let ty = (H - titleH) / 2;
                 for (const l of lines.slice(0, 5)) {
-                    ctx.fillText(l, 196, ty);
+                    ctx.fillText(l, tx, ty);
                     ty += lineH;
                 }
 
