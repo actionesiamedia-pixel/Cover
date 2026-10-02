@@ -135,16 +135,11 @@
                 <div class="mb-4 w-full">
                     <label for="input_background_color" class="mb-2 block text-sm font-medium text-gray-900">Background Color</label>
                     <select id="input_background_color" autocomplete="off" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                        <option value="cat-jualan" selected>Category — Jualan</option>
-                        <option value="cat-marketing">Category — Marketing</option>
-                        <option value="cat-konten">Category — Konten</option>
-                        <option value="cat-tools">Category — Tools</option>
-                        <option value="cat-special">Category — Special</option>
-                        <option value="#063D70">Solid — Actionesia Navy</option>
-                        <option value="#FF6A00">Solid — Actionesia Orange</option>
-                        <option value="#202124">Solid — Charcoal</option>
-                        <option value="#006B67">Solid — Deep Teal</option>
-                        <option value="#7A263A">Solid — Burgundy</option>
+                        <option value="#FF6A00" selected>Category — Jualan · Orange</option>
+                        <option value="#063D70">Category — Marketing · Navy</option>
+                        <option value="#7A263A">Category — Konten · Burgundy</option>
+                        <option value="#006B67">Category — Tools · Deep Teal</option>
+                        <option value="#202124">Special · Charcoal</option>
                         <option value="#285943">Solid — Forest Green</option>
                         <option value="#3E477C">Solid — Indigo</option>
                         <option value="#68483A">Solid — Coffee Brown</option>
@@ -173,8 +168,27 @@
                     <div class="mt-2 text-xs text-gray-500">If you choose the Background Color to be a Custom Color, then make sure the values for the Background Color and Text Color are HEX color codes or color names. Example: `#202124` or `red`.</div>
                 </div>
                 <div class="mb-4 w-full">
-                    <div class="text-xs text-gray-500">Category presets automatically apply their own color and signature pattern. Solid colors stay clean.</div>
-                </div>
+                    <label for="input_background_image" class="mb-2 block text-sm font-medium text-gray-900">Background Image</label>
+                    <select id="input_background_image" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
+                        <option disabled selected>Choose a Background Image</option>
+                        <option value="none">None</option>
+                        <!-- <option value="1">Background Image 001</option>
+                        <option value="2">Background Image 002</option>
+                        <option value="3">Background Image 003</option>
+                        <option value="4">Background Image 004</option>
+                        <option value="5">Background Image 005</option>
+                        <option value="6">Background Image 006</option>
+                        <option value="7">Background Image 007</option>
+                        <option value="8">Background Image 008</option>
+                        <option value="9">Background Image 009</option>
+                        <option value="10">Background Image 010</option> -->
+                    </select>
+                    <div class="input_background_image_advanced mt-4 hidden grid-cols-2 gap-3">
+                        <div class="relative flex items-center">
+                            <input id="image_invert" type="checkbox" value="invert(100%)" class="h-4 w-4 cursor-pointer rounded-sm border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                            <label for="image_invert" class="cursor-pointer select-none text-sm font-medium text-gray-900 ltr:ml-2 rtl:mr-2">Invert Color</label>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- <div class="mb-4 w-full">
@@ -259,78 +273,8 @@
             const select = document.getElementById("input_background_color");
             const value = select ? select.value : "#063D70";
 
-            // Actionesia category covers: fixed color + signature pattern.
-            function drawCategoryPattern(category) {
-                ctx.save();
-                ctx.globalAlpha = 0.14;
-                ctx.strokeStyle = "#FFFFFF";
-                ctx.fillStyle = "#FFFFFF";
-                ctx.lineWidth = 2;
-
-                if (category === "cat-jualan") {
-                    // Directional diagonal marks: movement / selling action.
-                    for (let x = -H; x < W + H; x += 54) {
-                        ctx.beginPath();
-                        ctx.moveTo(x, H);
-                        ctx.lineTo(x + H, 0);
-                        ctx.stroke();
-                    }
-                } else if (category === "cat-marketing") {
-                    // Strategic grid.
-                    ctx.lineWidth = 1.5;
-                    for (let x = 24; x < W; x += 64) {
-                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-                    }
-                    for (let y = 24; y < H; y += 64) {
-                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-                    }
-                } else if (category === "cat-konten") {
-                    // Flowing editorial waves.
-                    ctx.lineWidth = 2;
-                    for (let y = 40; y < H + 80; y += 70) {
-                        ctx.beginPath();
-                        for (let x = 0; x <= W; x += 12) {
-                            const yy = y + Math.sin((x / 90) + (y / 55)) * 18;
-                            if (x === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
-                        }
-                        ctx.stroke();
-                    }
-                } else if (category === "cat-tools") {
-                    // Nodes / connections.
-                    const stepX = 90, stepY = 76;
-                    for (let y = 38; y < H; y += stepY) {
-                        for (let x = 45; x < W; x += stepX) {
-                            ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
-                            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 42, y + 28); ctx.stroke();
-                        }
-                    }
-                } else if (category === "cat-special") {
-                    // Minimal editorial plus marks.
-                    ctx.lineWidth = 2;
-                    for (let y = 42; y < H; y += 82) {
-                        for (let x = 42; x < W; x += 82) {
-                            ctx.beginPath();
-                            ctx.moveTo(x - 7, y); ctx.lineTo(x + 7, y);
-                            ctx.moveTo(x, y - 7); ctx.lineTo(x, y + 7);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                ctx.restore();
-            }
-
-            if (value === "cat-jualan") {
-                ctx.fillStyle = "#FF6A00";
-            } else if (value === "cat-marketing") {
-                ctx.fillStyle = "#063D70";
-            } else if (value === "cat-konten") {
-                ctx.fillStyle = "#7A263A";
-            } else if (value === "cat-tools") {
-                ctx.fillStyle = "#006B67";
-            } else if (value === "cat-special") {
-                ctx.fillStyle = "#202124";
-            // Legacy gradients retained internally.
-            } else if (value === "gradient-diagonal") {
+            // Background gradients, matching the preview presets.
+            if (value === "gradient-diagonal") {
                 const g = ctx.createLinearGradient(0, 0, W, H);
                 g.addColorStop(0, "#063D70");
                 g.addColorStop(.42, "#063D70");
@@ -395,7 +339,6 @@
                 ctx.fillStyle = (value && value !== "custom") ? value : "#063D70";
             }
             ctx.fillRect(0, 0, W, H);
-            if (value.startsWith("cat-")) drawCategoryPattern(value);
 
             const bg = cover.querySelector(".background_image");
             const bgStyle = bg ? getComputedStyle(bg) : null;
@@ -528,48 +471,14 @@
                 "gradient-softblue": "linear-gradient(135deg, #063D70 0%, #0B568D 52%, #2878A8 100%)"
             };
 
-            const categoryBackgrounds = {
-                "cat-jualan": {
-                    color: "#FF6A00",
-                    pattern: "repeating-linear-gradient(135deg, rgba(255,255,255,.14) 0 2px, transparent 2px 38px)"
-                },
-                "cat-marketing": {
-                    color: "#063D70",
-                    pattern: "linear-gradient(rgba(255,255,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.11) 1px, transparent 1px)",
-                    size: "64px 64px"
-                },
-                "cat-konten": {
-                    color: "#7A263A",
-                    pattern: "radial-gradient(ellipse at 50% 0%, transparent 0 46%, rgba(255,255,255,.12) 47% 49%, transparent 50%)",
-                    size: "120px 70px"
-                },
-                "cat-tools": {
-                    color: "#006B67",
-                    pattern: "radial-gradient(circle, rgba(255,255,255,.20) 0 2px, transparent 3px), linear-gradient(35deg, transparent 48%, rgba(255,255,255,.09) 49% 50%, transparent 51%)",
-                    size: "90px 76px"
-                },
-                "cat-special": {
-                    color: "#202124",
-                    pattern: "linear-gradient(rgba(255,255,255,.12) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.12) 2px, transparent 2px)",
-                    size: "18px 18px"
-                }
-            };
-
             function applyActionesiaBackground() {
                 const value = colorSelect.value;
-                if (categoryBackgrounds[value]) {
-                    const preset = categoryBackgrounds[value];
-                    thumbnail.style.backgroundColor = preset.color;
-                    thumbnail.style.backgroundImage = preset.pattern;
-                    thumbnail.style.backgroundSize = preset.size || "38px 38px";
-                    thumbnail.style.color = "#FFFFFF";
-                } else if (gradients[value]) {
+                if (gradients[value]) {
                     thumbnail.style.background = gradients[value];
                     thumbnail.style.color = "#FFFFFF";
                 } else if (value !== "custom") {
-                    thumbnail.style.backgroundImage = "none";
-                    thumbnail.style.backgroundSize = "";
-                    thumbnail.style.backgroundColor = value || "#063D70";
+                    thumbnail.style.backgroundImage = "";
+                    thumbnail.style.background = value || "#063D70";
                     thumbnail.style.color = "#FFFFFF";
                 }
             }
