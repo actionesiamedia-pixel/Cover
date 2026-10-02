@@ -277,11 +277,7 @@
             const select = document.getElementById("input_background_color");
             const value = select ? select.value : "#063D70";
 
-            function hexColor(hex) {
-                return hex || "#063D70";
-            }
-
-            // Background: reproduce V7 presets directly on Canvas.
+            // Background gradients, matching the preview presets.
             if (value === "gradient-diagonal") {
                 const g = ctx.createLinearGradient(0, 0, W, H);
                 g.addColorStop(0, "#063D70");
@@ -330,16 +326,21 @@
                 }
                 ctx.fillStyle = g;
             } else {
-                ctx.fillStyle = (value && value !== "custom") ? hexColor(value) : (getComputedStyle(cover).backgroundColor || "#063D70");
+                ctx.fillStyle = (value && value !== "custom") ? value : "#063D70";
             }
             ctx.fillRect(0, 0, W, H);
 
-            // If a background pattern/image is currently visible, paint it too.
             const bg = cover.querySelector(".background_image");
             const bgStyle = bg ? getComputedStyle(bg) : null;
-            const bgUrlMatch = bgStyle && bgStyle.backgroundImage ? bgStyle.backgroundImage.match(/url\(["']?(.*?)["']?\)/) : null;
+            const bgUrlMatch = bgStyle && bgStyle.backgroundImage
+                ? bgStyle.backgroundImage.match(/url\(["']?(.*?)["']?\)/)
+                : null;
 
-            function drawTextAndDownload() {
+            function finish() {
+                const label = (document.getElementById("post_label")?.innerText || "Label").trim();
+                const title = (document.getElementById("post_title")?.innerText || "").trim();
+                const site = (document.getElementById("blog_title")?.innerText || "www.actionesia.id").trim();
+
                 ctx.fillStyle = "#FFFFFF";
                 ctx.textBaseline = "top";
                 ctx.shadowColor = "rgba(0,0,0,.20)";
@@ -347,89 +348,90 @@
                 ctx.shadowOffsetX = 4;
                 ctx.shadowOffsetY = 2;
 
-                const label = (document.getElementById("post_label")?.innerText || "Label").trim();
-                const title = (document.getElementById("post_title")?.innerText || "").trim();
-                const site = (document.getElementById("blog_title")?.innerText || "www.actionesia.id").trim();
-
-                ctx.font = "700 20px Arial, sans-serif";
+                // Original 900x506 cover coordinates.
+                ctx.font = '700 20px Arial, sans-serif';
                 ctx.fillText(label, 56, 56);
-                const lw = ctx.measureText(label).width;
+
+                const labelWidth = ctx.measureText(label).width;
+                ctx.save();
                 ctx.shadowColor = "transparent";
-                ctx.fillRect(56, 86, lw, 2);
+                ctx.fillRect(56, 86, labelWidth, 2);
+                ctx.restore();
 
-                // Title: derive typography and placement from the live preview.
-                ctx.shadowColor = "rgba(0,0,0,.20)";
-                const titleEl = document.getElementById("post_title");
-                const coverRect = cover.getBoundingClientRect();
-                const titleRect = titleEl.getBoundingClientRect();
-                const ts = getComputedStyle(titleEl);
+                // Match the original preview's px-52 title area:
+                // x = 208, usable width = 900 - 416 = 484.
+                const titleX = 208;
+                const titleMaxWidth = 484;
+                const titleFontSize = 44;
+                const lineHeight = 52.8;
+                ctx.font = '700 ' + titleFontSize + 'px Arial, sans-serif';
 
-                const scaleX = W / coverRect.width;
-                const scaleY = H / coverRect.height;
-                const fontSize = parseFloat(ts.fontSize) * scaleY;
-                const lineH = (parseFloat(ts.lineHeight) || parseFloat(ts.fontSize) * 1.2) * scaleY;
-                const fontWeight = ts.fontWeight || "700";
-                const fontFamily = ts.fontFamily || "Arial, sans-serif";
-                ctx.font = fontWeight + " " + fontSize + "px " + fontFamily;
-
-                const tx = (titleRect.left - coverRect.left) * scaleX;
-                const maxWidth = titleRect.width * scaleX;
-
-                const words = title.split(/\s+/);
+                const paragraphs = title.split(/\n/);
                 const lines = [];
-                let line = "";
-                for (const word of words) {
-                    const test = line ? line + " " + word : word;
-                    if (ctx.measureText(test).width > maxWidth && line) {
-                        lines.push(line);
-                        line = word;
-                    } else {
-                        line = test;
+                for (const paragraph of paragraphs) {
+                    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+                    if (!words.length) {
+                        lines.push("");
+                        continue;
                     }
+                    let line = "";
+                    for (const word of words) {
+                        const test = line ? line + " " + word : word;
+                        if (ctx.measureText(test).width > titleMaxWidth && line) {
+                            lines.push(line);
+                            line = word;
+                        } else {
+                            line = test;
+                        }
+                    }
+                    if (line) lines.push(line);
                 }
-                if (line) lines.push(line);
 
-                const titleH = Math.min(lines.length, 5) * lineH;
-                let ty = (H - titleH) / 2;
-                for (const l of lines.slice(0, 5)) {
-                    ctx.fillText(l, tx, ty);
-                    ty += lineH;
+                const visible = lines.slice(0, 5);
+                const blockHeight = visible.length * lineHeight;
+                let y = (H - blockHeight) / 2;
+
+                for (const line of visible) {
+                    ctx.fillText(line, titleX, y);
+                    y += lineHeight;
                 }
 
-                ctx.font = "700 20px Arial, sans-serif";
-                const sw = ctx.measureText(site).width;
-                ctx.fillText(site, W - 56 - sw, H - 56 - 24);
+                // Bottom-right site.
+                ctx.font = '700 20px Arial, sans-serif';
+                const siteWidth = ctx.measureText(site).width;
+                ctx.fillText(site, W - 56 - siteWidth, H - 56 - 24);
 
-                canvas.toBlob(function(blob) {
+                canvas.toBlob(function (blob) {
+                    const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
-                    a.href = URL.createObjectURL(blob);
+                    a.href = url;
                     a.download = "actionesia-cover.png";
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
-                    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
                 }, "image/png");
             }
 
+            // Preserve the currently selected pattern when possible.
             if (bgUrlMatch && bgStyle.display !== "none" && bgStyle.visibility !== "hidden") {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
                 img.onload = function () {
                     ctx.save();
                     ctx.globalAlpha = parseFloat(bgStyle.opacity || ".25");
-                    // Tile pattern across canvas, matching the existing pattern-like backgrounds.
                     const pattern = ctx.createPattern(img, "repeat");
                     if (pattern) {
                         ctx.fillStyle = pattern;
                         ctx.fillRect(0, 0, W, H);
                     }
                     ctx.restore();
-                    drawTextAndDownload();
+                    finish();
                 };
-                img.onerror = drawTextAndDownload;
+                img.onerror = finish;
                 img.src = bgUrlMatch[1];
             } else {
-                drawTextAndDownload();
+                finish();
             }
         }, true);
     })();
