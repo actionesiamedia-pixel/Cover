@@ -135,28 +135,14 @@
                 <div class="mb-4 w-full">
                     <label for="input_background_color" class="mb-2 block text-sm font-medium text-gray-900">Background Color</label>
                     <select id="input_background_color" autocomplete="off" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                        <option disabled selected>Choose a Background Color</option>
+                        <option value="#063D70" selected>Actionesia Navy (Default)</option>
+                        <option value="actionesia-gradient">Actionesia Gradient — Navy → Orange</option>
+                        <option value="#FF6A00">Actionesia Orange</option>
+                        <option value="#082B4C">Deep Navy</option>
+                        <option value="#202124">Charcoal</option>
+                        <option value="#006B67">Deep Teal</option>
+                        <option value="#7A263A">Deep Burgundy</option>
                         <option value="custom">Custom Color (Advanced)</option>
-
-                        <option value="#c62828">Material Design Red</option>
-                        <option value="#c2185b">Material Design Pink</option>
-                        <option value="#7b1fa2">Material Design Purple</option>
-                        <option value="#512da8">Material Design Deep Purple</option>
-                        <option value="#303f9f">Material Design Indigo</option>
-                        <option value="#1976d2">Material Design Blue</option>
-                        <option value="#005b9f">Material Design Light Blue</option>
-                        <option value="#006978">Material Design Cyan</option>
-                        <option value="#00796b">Material Design Teal</option>
-                        <option value="#00600f">Material Design Green - Dark</option>
-                        <option value="#387002">Material Design Light Green - Dark</option>
-                        <option value="#6c6f00">Material Design Lime - Dark</option>
-                        <option value="#bc5100">Material Design Yellow - Dark</option>
-                        <option value="#c43e00">Material Design Amber - Dark</option>
-                        <option value="#bb4d00">Material Design Orange - Dark</option>
-                        <option value="#ac0800">Material Design Deep Orange - Dark</option>
-                        <option value="#5d4037">Material Design Brown</option>
-                        <option value="#616161">Material Design Grey</option>
-                        <option value="#455a64">Material Design Blue Grey</option>
                     </select>
                     <div class="container_background_color mt-4 hidden grid-cols-2 gap-3">
                         <div class="relative w-full">
@@ -232,7 +218,7 @@
             </form>
             <h2 class="mb-2 text-lg font-bold">Render Results:</h2>
             <div class="thumbnail_containers relative mb-4 overflow-x-auto overflow-y-hidden">
-                <div class="thumbnail_container relative z-10 aspect-video h-[506.25px] w-[900px] select-none justify-center overflow-hidden bg-[#202124] text-white">
+                <div class="thumbnail_container relative z-10 aspect-video h-[506.25px] w-[900px] select-none justify-center overflow-hidden bg-[#063D70] text-white">
                     <div class="absolute top-0 flex w-full flex-row items-start justify-between px-14 pt-14 text-xl font-bold">
                         <div class="flex w-auto flex-col items-start justify-center">
                             <div id="post_label" class="max-w-[145px] break-words leading-6 [text-shadow:4px_2px_5px_rgba(0,0,0,0.2)]" style="display:inline-block; border-bottom:2px solid currentColor; padding-bottom:6px;">Label</div>
@@ -270,4 +256,27 @@
     <!-- <script src="./src/assets/scripts/scripts.js"></script> -->
 
     <script src="./dist/scripts/bundle.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const colorSelect = document.getElementById("input_background_color");
+            const thumbnail = document.querySelector(".thumbnail_container");
+            if (!colorSelect || !thumbnail) return;
+
+            function applyActionesiaBackground() {
+                if (colorSelect.value === "actionesia-gradient") {
+                    thumbnail.style.background = "linear-gradient(135deg, #063D70 0%, #063D70 42%, #FF6A00 100%)";
+                    thumbnail.style.color = "#FFFFFF";
+                } else {
+                    thumbnail.style.backgroundImage = "";
+                    thumbnail.style.background = colorSelect.value || "#063D70";
+                    thumbnail.style.color = "#FFFFFF";
+                }
+            }
+
+            colorSelect.addEventListener("change", applyActionesiaBackground);
+            applyActionesiaBackground();
+        });
+    </script>
+
 </html>
