@@ -135,18 +135,17 @@
                 <div class="mb-4 w-full">
                     <label for="input_background_color" class="mb-2 block text-sm font-medium text-gray-900">Background Color</label>
                     <select id="input_background_color" autocomplete="off" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                        <option value="#063D70" selected>Actionesia Navy (Default)</option>
-                        <option value="gradient-diagonal">Gradient — Diagonal Signature</option>
-                        <option value="gradient-horizontal">Gradient — Horizontal</option>
-                        <option value="gradient-vertical">Gradient — Vertical</option>
-                        <option value="gradient-corner">Gradient — Orange Corner</option>
-                        <option value="gradient-glow">Gradient — Orange Glow</option>
-                        <option value="gradient-bold">Gradient — Bold Diagonal</option>
-                        <option value="#FF6A00">Actionesia Orange</option>
-                        <option value="#082B4C">Deep Navy</option>
-                        <option value="#202124">Charcoal</option>
-                        <option value="#006B67">Deep Teal</option>
-                        <option value="#7A263A">Deep Burgundy</option>
+                        <option value="gradient-diagonal" selected>01 — Signature Diagonal</option>
+                        <option value="gradient-horizontal">02 — Signature Horizontal</option>
+                        <option value="gradient-vertical">03 — Bottom Glow</option>
+                        <option value="gradient-corner">04 — Orange Corner</option>
+                        <option value="gradient-glow">05 — Orange Glow</option>
+                        <option value="gradient-bold">06 — Bold Diagonal</option>
+                        <option value="gradient-deep">07 — Deep Navy Glow</option>
+                        <option value="gradient-softblue">08 — Soft Blue</option>
+                        <option value="#063D70">Solid — Actionesia Navy</option>
+                        <option value="#FF6A00">Solid — Actionesia Orange</option>
+                        <option value="#202124">Solid — Charcoal</option>
                         <option value="custom">Custom Color (Advanced)</option>
                     </select>
                     <div class="container_background_color mt-4 hidden grid-cols-2 gap-3">
@@ -306,6 +305,20 @@
                 g.addColorStop(.581, "#FF6A00");
                 g.addColorStop(1, "#FF6A00");
                 ctx.fillStyle = g;
+            } else if (value === "gradient-deep") {
+                const x = W * .82, y = H * .72, r = Math.max(W, H) * .95;
+                const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+                g.addColorStop(0, "#B64D14");
+                g.addColorStop(.28, "#183F5E");
+                g.addColorStop(.62, "#082B4C");
+                g.addColorStop(1, "#041F38");
+                ctx.fillStyle = g;
+            } else if (value === "gradient-softblue") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#063D70");
+                g.addColorStop(.52, "#0B568D");
+                g.addColorStop(1, "#2878A8");
+                ctx.fillStyle = g;
             } else if (value === "gradient-corner" || value === "gradient-glow") {
                 const x = value === "gradient-corner" ? W : W * .82;
                 const y = value === "gradient-corner" ? H : H * .68;
@@ -456,7 +469,9 @@
                 "gradient-vertical": "linear-gradient(180deg, #063D70 0%, #063D70 52%, #A94B18 80%, #FF6A00 100%)",
                 "gradient-corner": "radial-gradient(circle at 100% 100%, #FF6A00 0%, #C65316 20%, #31506B 45%, #063D70 72%)",
                 "gradient-glow": "radial-gradient(circle at 82% 68%, #FF6A00 0%, #9D4A21 18%, #17466B 43%, #063D70 72%)",
-                "gradient-bold": "linear-gradient(120deg, #063D70 0%, #063D70 58%, #FF6A00 58%, #FF6A00 100%)"
+                "gradient-bold": "linear-gradient(120deg, #063D70 0%, #063D70 58%, #FF6A00 58%, #FF6A00 100%)",
+                "gradient-deep": "radial-gradient(circle at 82% 72%, #B64D14 0%, #183F5E 28%, #082B4C 62%, #041F38 100%)",
+                "gradient-softblue": "linear-gradient(135deg, #063D70 0%, #0B568D 52%, #2878A8 100%)"
             };
 
             function applyActionesiaBackground() {
