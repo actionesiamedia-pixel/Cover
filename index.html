@@ -255,7 +255,172 @@
                 </button> -->
             </div>
         </div>
-    </body>
+    
+    <script>
+    (function () {
+        const btn = document.getElementById("button_download_image");
+        if (!btn) return;
+
+        btn.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            const cover = document.querySelector(".thumbnail_container");
+            if (!cover) return;
+
+            const W = 900, H = 506;
+            const canvas = document.createElement("canvas");
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext("2d");
+
+            const select = document.getElementById("input_background_color");
+            const value = select ? select.value : "#063D70";
+
+            function hexColor(hex) {
+                return hex || "#063D70";
+            }
+
+            // Background: reproduce V7 presets directly on Canvas.
+            if (value === "gradient-diagonal") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#063D70");
+                g.addColorStop(.42, "#063D70");
+                g.addColorStop(.76, "#A94B18");
+                g.addColorStop(1, "#FF6A00");
+                ctx.fillStyle = g;
+            } else if (value === "gradient-horizontal") {
+                const g = ctx.createLinearGradient(0, 0, W, 0);
+                g.addColorStop(0, "#063D70");
+                g.addColorStop(.48, "#063D70");
+                g.addColorStop(.78, "#B64D14");
+                g.addColorStop(1, "#FF6A00");
+                ctx.fillStyle = g;
+            } else if (value === "gradient-vertical") {
+                const g = ctx.createLinearGradient(0, 0, 0, H);
+                g.addColorStop(0, "#063D70");
+                g.addColorStop(.52, "#063D70");
+                g.addColorStop(.80, "#A94B18");
+                g.addColorStop(1, "#FF6A00");
+                ctx.fillStyle = g;
+            } else if (value === "gradient-bold") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#063D70");
+                g.addColorStop(.58, "#063D70");
+                g.addColorStop(.581, "#FF6A00");
+                g.addColorStop(1, "#FF6A00");
+                ctx.fillStyle = g;
+            } else if (value === "gradient-corner" || value === "gradient-glow") {
+                const x = value === "gradient-corner" ? W : W * .82;
+                const y = value === "gradient-corner" ? H : H * .68;
+                const r = Math.max(W, H) * .95;
+                const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+                if (value === "gradient-corner") {
+                    g.addColorStop(0, "#FF6A00");
+                    g.addColorStop(.20, "#C65316");
+                    g.addColorStop(.45, "#31506B");
+                    g.addColorStop(.72, "#063D70");
+                    g.addColorStop(1, "#063D70");
+                } else {
+                    g.addColorStop(0, "#FF6A00");
+                    g.addColorStop(.18, "#9D4A21");
+                    g.addColorStop(.43, "#17466B");
+                    g.addColorStop(.72, "#063D70");
+                    g.addColorStop(1, "#063D70");
+                }
+                ctx.fillStyle = g;
+            } else {
+                ctx.fillStyle = (value && value !== "custom") ? hexColor(value) : (getComputedStyle(cover).backgroundColor || "#063D70");
+            }
+            ctx.fillRect(0, 0, W, H);
+
+            // If a background pattern/image is currently visible, paint it too.
+            const bg = cover.querySelector(".background_image");
+            const bgStyle = bg ? getComputedStyle(bg) : null;
+            const bgUrlMatch = bgStyle && bgStyle.backgroundImage ? bgStyle.backgroundImage.match(/url\(["']?(.*?)["']?\)/) : null;
+
+            function drawTextAndDownload() {
+                ctx.fillStyle = "#FFFFFF";
+                ctx.textBaseline = "top";
+                ctx.shadowColor = "rgba(0,0,0,.20)";
+                ctx.shadowBlur = 5;
+                ctx.shadowOffsetX = 4;
+                ctx.shadowOffsetY = 2;
+
+                const label = (document.getElementById("post_label")?.innerText || "Label").trim();
+                const title = (document.getElementById("post_title")?.innerText || "").trim();
+                const site = (document.getElementById("blog_title")?.innerText || "www.actionesia.id").trim();
+
+                ctx.font = "700 20px Arial, sans-serif";
+                ctx.fillText(label, 56, 56);
+                const lw = ctx.measureText(label).width;
+                ctx.shadowColor = "transparent";
+                ctx.fillRect(56, 86, lw, 2);
+
+                // Title: wrap to the same central text area.
+                ctx.shadowColor = "rgba(0,0,0,.20)";
+                ctx.font = "700 44px Arial, sans-serif";
+                const maxWidth = 496;
+                const words = title.split(/\s+/);
+                const lines = [];
+                let line = "";
+                for (const word of words) {
+                    const test = line ? line + " " + word : word;
+                    if (ctx.measureText(test).width > maxWidth && line) {
+                        lines.push(line);
+                        line = word;
+                    } else line = test;
+                }
+                if (line) lines.push(line);
+
+                const lineH = 53;
+                const titleH = lines.length * lineH;
+                let ty = (H - titleH) / 2;
+                for (const l of lines.slice(0, 5)) {
+                    ctx.fillText(l, 196, ty);
+                    ty += lineH;
+                }
+
+                ctx.font = "700 20px Arial, sans-serif";
+                const sw = ctx.measureText(site).width;
+                ctx.fillText(site, W - 56 - sw, H - 56 - 24);
+
+                canvas.toBlob(function(blob) {
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = "actionesia-cover.png";
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+                }, "image/png");
+            }
+
+            if (bgUrlMatch && bgStyle.display !== "none" && bgStyle.visibility !== "hidden") {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = function () {
+                    ctx.save();
+                    ctx.globalAlpha = parseFloat(bgStyle.opacity || ".25");
+                    // Tile pattern across canvas, matching the existing pattern-like backgrounds.
+                    const pattern = ctx.createPattern(img, "repeat");
+                    if (pattern) {
+                        ctx.fillStyle = pattern;
+                        ctx.fillRect(0, 0, W, H);
+                    }
+                    ctx.restore();
+                    drawTextAndDownload();
+                };
+                img.onerror = drawTextAndDownload;
+                img.src = bgUrlMatch[1];
+            } else {
+                drawTextAndDownload();
+            }
+        }, true);
+    })();
+    </script>
+
+</body>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://superal.github.io/canvas2image/canvas2image.js"></script> -->
     <!-- <script src="./src/assets/scripts/scripts.js"></script> -->
