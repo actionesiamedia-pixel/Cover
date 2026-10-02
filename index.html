@@ -135,16 +135,17 @@
                 <div class="mb-4 w-full">
                     <label for="input_background_color" class="mb-2 block text-sm font-medium text-gray-900">Background Color</label>
                     <select id="input_background_color" autocomplete="off" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
-                        <option value="gradient-diagonal" selected>01 — Signature Diagonal</option>
-                        <option value="gradient-horizontal">02 — Signature Horizontal</option>
-                        <option value="gradient-vertical">03 — Bottom Glow</option>
-                        <option value="gradient-corner">04 — Orange Corner</option>
-                        <option value="gradient-glow">05 — Orange Glow</option>
-                        <option value="gradient-bold">06 — Bold Diagonal</option>
-                        <option value="gradient-deep">07 — Deep Navy Glow</option>
-                        <option value="gradient-softblue">08 — Soft Blue</option>
+                        <option value="gradient-diagonal" selected>01 — Signature</option>
+                        <option value="gradient-corner">02 — Orange Corner</option>
+                        <option value="gradient-glow">03 — Orange Glow</option>
+                        <option value="gradient-horizontal">04 — Horizontal</option>
+                        <option value="gradient-vertical">05 — Vertical</option>
+                        <option value="muted-terracotta">06 — Muted Terracotta</option>
+                        <option value="muted-slate">07 — Muted Slate</option>
+                        <option value="muted-earth">08 — Muted Earth</option>
+                        <option value="muted-teal">09 — Muted Teal</option>
+                        <option value="muted-editorial">10 — Dark Editorial</option>
                         <option value="#063D70">Solid — Actionesia Navy</option>
-                        <option value="#FF6A00">Solid — Actionesia Orange</option>
                         <option value="#202124">Solid — Charcoal</option>
                         <option value="custom">Custom Color (Advanced)</option>
                     </select>
@@ -319,6 +320,44 @@
                 g.addColorStop(.52, "#0B568D");
                 g.addColorStop(1, "#2878A8");
                 ctx.fillStyle = g;
+            } else if (value === "muted-terracotta") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#073A60");
+                g.addColorStop(.48, "#31566D");
+                g.addColorStop(.76, "#8A5A49");
+                g.addColorStop(1, "#B86B4B");
+                ctx.fillStyle = g;
+            } else if (value === "muted-slate") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#0A3B5F");
+                g.addColorStop(.52, "#496879");
+                g.addColorStop(1, "#8B7770");
+                ctx.fillStyle = g;
+            } else if (value === "muted-earth") {
+                const x = W * .88, y = H * .72, r = Math.max(W, H) * .95;
+                const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+                g.addColorStop(0, "#B06B49");
+                g.addColorStop(.24, "#79594F");
+                g.addColorStop(.50, "#3D5966");
+                g.addColorStop(.78, "#123F5C");
+                g.addColorStop(1, "#073550");
+                ctx.fillStyle = g;
+            } else if (value === "muted-teal") {
+                const g = ctx.createLinearGradient(0, 0, W, H);
+                g.addColorStop(0, "#073A60");
+                g.addColorStop(.50, "#315D68");
+                g.addColorStop(.78, "#627267");
+                g.addColorStop(1, "#9A7459");
+                ctx.fillStyle = g;
+            } else if (value === "muted-editorial") {
+                const x = W * .88, y = H * .78, r = Math.max(W, H) * .9;
+                const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+                g.addColorStop(0, "#9A5C43");
+                g.addColorStop(.18, "#684E4A");
+                g.addColorStop(.42, "#294B5D");
+                g.addColorStop(.70, "#0A3552");
+                g.addColorStop(1, "#052B46");
+                ctx.fillStyle = g;
             } else if (value === "gradient-corner" || value === "gradient-glow") {
                 const x = value === "gradient-corner" ? W : W * .82;
                 const y = value === "gradient-corner" ? H : H * .68;
@@ -471,7 +510,12 @@
                 "gradient-glow": "radial-gradient(circle at 82% 68%, #FF6A00 0%, #9D4A21 18%, #17466B 43%, #063D70 72%)",
                 "gradient-bold": "linear-gradient(120deg, #063D70 0%, #063D70 58%, #FF6A00 58%, #FF6A00 100%)",
                 "gradient-deep": "radial-gradient(circle at 82% 72%, #B64D14 0%, #183F5E 28%, #082B4C 62%, #041F38 100%)",
-                "gradient-softblue": "linear-gradient(135deg, #063D70 0%, #0B568D 52%, #2878A8 100%)"
+                "gradient-softblue": "linear-gradient(135deg, #063D70 0%, #0B568D 52%, #2878A8 100%)",
+                "muted-terracotta": "linear-gradient(135deg, #073A60 0%, #31566D 48%, #8A5A49 76%, #B86B4B 100%)",
+                "muted-slate": "linear-gradient(135deg, #0A3B5F 0%, #496879 52%, #8B7770 100%)",
+                "muted-earth": "radial-gradient(circle at 88% 72%, #B06B49 0%, #79594F 24%, #3D5966 50%, #123F5C 78%, #073550 100%)",
+                "muted-teal": "linear-gradient(135deg, #073A60 0%, #315D68 50%, #627267 78%, #9A7459 100%)",
+                "muted-editorial": "radial-gradient(circle at 88% 78%, #9A5C43 0%, #684E4A 18%, #294B5D 42%, #0A3552 70%, #052B46 100%)"
             };
 
             function applyActionesiaBackground() {
