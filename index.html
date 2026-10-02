@@ -136,7 +136,12 @@
                     <label for="input_background_color" class="mb-2 block text-sm font-medium text-gray-900">Background Color</label>
                     <select id="input_background_color" autocomplete="off" class="block w-full cursor-pointer rounded-md border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                         <option value="#063D70" selected>Actionesia Navy (Default)</option>
-                        <option value="actionesia-gradient">Actionesia Gradient — Navy → Orange</option>
+                        <option value="gradient-diagonal">Gradient — Diagonal Signature</option>
+                        <option value="gradient-horizontal">Gradient — Horizontal</option>
+                        <option value="gradient-vertical">Gradient — Vertical</option>
+                        <option value="gradient-corner">Gradient — Orange Corner</option>
+                        <option value="gradient-glow">Gradient — Orange Glow</option>
+                        <option value="gradient-bold">Gradient — Bold Diagonal</option>
                         <option value="#FF6A00">Actionesia Orange</option>
                         <option value="#082B4C">Deep Navy</option>
                         <option value="#202124">Charcoal</option>
@@ -263,13 +268,23 @@
             const thumbnail = document.querySelector(".thumbnail_container");
             if (!colorSelect || !thumbnail) return;
 
+            const gradients = {
+                "gradient-diagonal": "linear-gradient(135deg, #063D70 0%, #063D70 42%, #A94B18 76%, #FF6A00 100%)",
+                "gradient-horizontal": "linear-gradient(90deg, #063D70 0%, #063D70 48%, #B64D14 78%, #FF6A00 100%)",
+                "gradient-vertical": "linear-gradient(180deg, #063D70 0%, #063D70 52%, #A94B18 80%, #FF6A00 100%)",
+                "gradient-corner": "radial-gradient(circle at 100% 100%, #FF6A00 0%, #C65316 20%, #31506B 45%, #063D70 72%)",
+                "gradient-glow": "radial-gradient(circle at 82% 68%, #FF6A00 0%, #9D4A21 18%, #17466B 43%, #063D70 72%)",
+                "gradient-bold": "linear-gradient(120deg, #063D70 0%, #063D70 58%, #FF6A00 58%, #FF6A00 100%)"
+            };
+
             function applyActionesiaBackground() {
-                if (colorSelect.value === "actionesia-gradient") {
-                    thumbnail.style.background = "linear-gradient(135deg, #063D70 0%, #063D70 42%, #FF6A00 100%)";
+                const value = colorSelect.value;
+                if (gradients[value]) {
+                    thumbnail.style.background = gradients[value];
                     thumbnail.style.color = "#FFFFFF";
-                } else {
+                } else if (value !== "custom") {
                     thumbnail.style.backgroundImage = "";
-                    thumbnail.style.background = colorSelect.value || "#063D70";
+                    thumbnail.style.background = value || "#063D70";
                     thumbnail.style.color = "#FFFFFF";
                 }
             }
