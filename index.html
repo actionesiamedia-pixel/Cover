@@ -602,17 +602,23 @@
 
             // Actionesia live text bindings.
             const textBindings = [
-                ["input_post_label", "post_label", "Label"],
-                ["input_post_title", "post_title", "This is an example of a Post Title with 4 lines of words. Maximum is 5 lines."],
-                ["input_blog_title", "blog_title", "www.actionesia.id"]
+                ["input_post_label", "post_label", "Label", false],
+                ["input_post_title", "post_title", "This is an example of a Post Title with 4 lines of words. Maximum is 5 lines.", true],
+                ["input_blog_title", "blog_title", "www.actionesia.id", false]
             ];
             textBindings.forEach(function (binding) {
                 const input = document.getElementById(binding[0]);
                 const output = document.getElementById(binding[1]);
                 const fallback = binding[2];
+                const allowHtml = binding[3];
                 if (!input || !output) return;
                 const sync = function () {
-                    output.textContent = input.value.trim() || fallback;
+                    const value = input.value.trim() || fallback;
+                    if (allowHtml) {
+                        output.innerHTML = value;
+                    } else {
+                        output.textContent = value;
+                    }
                 };
                 input.addEventListener("input", sync);
                 input.addEventListener("change", sync);
