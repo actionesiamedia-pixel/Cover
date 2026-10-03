@@ -452,10 +452,11 @@
 
                 // Original 900x506 cover coordinates.
                 ctx.font = '700 20px Arial, sans-serif';
+                ctx.save();
+                ctx.textBaseline = "top";
                 ctx.fillText(label, 48, 48);
 
                 const labelWidth = ctx.measureText(label).width;
-                ctx.save();
                 ctx.shadowColor = "transparent";
                 ctx.fillRect(48, 78, labelWidth, 2);
                 ctx.restore();
@@ -501,7 +502,10 @@
                 // Bottom-right site.
                 ctx.font = '700 18px Arial, sans-serif';
                 const siteWidth = ctx.measureText(site).width;
-                ctx.fillText(site, W - 48 - siteWidth, H - 48 - 22);
+                ctx.save();
+                ctx.textBaseline = "bottom";
+                ctx.fillText(site, W - 48 - siteWidth, H - 48);
+                ctx.restore();
 
                 canvas.toBlob(function (blob) {
                     const url = URL.createObjectURL(blob);
