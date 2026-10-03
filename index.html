@@ -196,6 +196,9 @@
                         <option value="custom-09">Pattern Tambahan 09</option>
                         <option value="custom-10">Pattern Tambahan 10</option>
                     </select>
+                    <button id="button_invert_color" type="button" class="mt-3 inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                        Invert Color
+                    </button>
                     <div class="mt-2 text-xs text-gray-500">Pattern Tambahan 01–10 memakai file SVG buatanmu dan otomatis dibuat putih/transparan di atas warna kategori.</div>
                 </div>
                 </div>
@@ -285,7 +288,7 @@
             // Actionesia category covers: fixed color + signature pattern.
             function drawCategoryPattern(category) {
                 ctx.save();
-                ctx.globalAlpha = 0.14;
+                ctx.globalAlpha = 0.055;
                 ctx.strokeStyle = "#FFFFFF";
                 ctx.fillStyle = "#FFFFFF";
                 ctx.lineWidth = 2;
@@ -504,6 +507,18 @@
                 ctx.textBaseline = "bottom";
                 ctx.fillText(site, W - 208 - siteWidth, H - 48);
 
+                // Match the live preview's Invert Color state in the downloaded PNG.
+                if (cover.dataset.invertColor === "1") {
+                    const imageData = ctx.getImageData(0, 0, W, H);
+                    const d = imageData.data;
+                    for (let i = 0; i < d.length; i += 4) {
+                        d[i] = 255 - d[i];
+                        d[i + 1] = 255 - d[i + 1];
+                        d[i + 2] = 255 - d[i + 2];
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                }
+
                 canvas.toBlob(function (blob) {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -529,7 +544,7 @@
                     octx.fillStyle = "#FFFFFF";
                     octx.fillRect(0, 0, W, H);
                     ctx.save();
-                    ctx.globalAlpha = 0.14;
+                    ctx.globalAlpha = 0.055;
                     ctx.drawImage(off, 0, 0);
                     ctx.restore();
                     finish();
@@ -573,6 +588,24 @@
             const thumbnail = document.querySelector(".thumbnail_container");
             if (!colorSelect || !patternSelect || !thumbnail) return;
 
+            // Invert Color: swap the cover background/text relationship without changing layout.
+            let invertColor = false;
+            const invertButton = document.getElementById("button_invert_color");
+            function applyInvertState() {
+                thumbnail.dataset.invertColor = invertColor ? "1" : "0";
+                thumbnail.style.filter = invertColor ? "invert(1)" : "none";
+                if (invertButton) {
+                    invertButton.textContent = invertColor ? "Reset Color" : "Invert Color";
+                }
+            }
+            if (invertButton) {
+                invertButton.addEventListener("click", function () {
+                    invertColor = !invertColor;
+                    applyInvertState();
+                });
+            }
+            applyInvertState();
+
             // Actionesia live text bindings.
             const textBindings = [
                 ["input_post_label", "post_label", "Label"],
@@ -606,26 +639,26 @@
             const categoryBackgrounds = {
                 "cat-jualan": {
                     color: "#FF6A00",
-                    pattern: "repeating-linear-gradient(135deg, rgba(255,255,255,.14) 0 2px, transparent 2px 38px)"
+                    pattern: "repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 2px, transparent 2px 38px)"
                 },
                 "cat-marketing": {
                     color: "#063D70",
-                    pattern: "linear-gradient(rgba(255,255,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.11) 1px, transparent 1px)",
+                    pattern: "linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px)",
                     size: "64px 64px"
                 },
                 "cat-konten": {
                     color: "#7A263A",
-                    pattern: "radial-gradient(ellipse at 50% 0%, transparent 0 46%, rgba(255,255,255,.12) 47% 49%, transparent 50%)",
+                    pattern: "radial-gradient(ellipse at 50% 0%, transparent 0 46%, rgba(255,255,255,.05) 47% 49%, transparent 50%)",
                     size: "120px 70px"
                 },
                 "cat-tools": {
                     color: "#006B67",
-                    pattern: "radial-gradient(circle, rgba(255,255,255,.20) 0 2px, transparent 3px), linear-gradient(35deg, transparent 48%, rgba(255,255,255,.09) 49% 50%, transparent 51%)",
+                    pattern: "radial-gradient(circle, rgba(255,255,255,.08) 0 2px, transparent 3px), linear-gradient(35deg, transparent 48%, rgba(255,255,255,.04) 49% 50%, transparent 51%)",
                     size: "90px 76px"
                 },
                 "cat-special": {
                     color: "#202124",
-                    pattern: "linear-gradient(rgba(255,255,255,.12) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.12) 2px, transparent 2px)",
+                    pattern: "linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px)",
                     size: "18px 18px"
                 }
             };
@@ -650,11 +683,11 @@
                 };
                 const resolved = patternChoice === "auto" ? (autoMap[value] || "clean") : patternChoice;
                 const cssPatterns = {
-                    diagonal: {image:"repeating-linear-gradient(135deg, rgba(255,255,255,.14) 0 2px, transparent 2px 38px)", size:"38px 38px"},
-                    grid: {image:"linear-gradient(rgba(255,255,255,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.11) 1px, transparent 1px)", size:"64px 64px"},
-                    waves: {image:"radial-gradient(ellipse at 50% 0%, transparent 0 46%, rgba(255,255,255,.12) 47% 49%, transparent 50%)", size:"120px 70px"},
-                    nodes: {image:"radial-gradient(circle, rgba(255,255,255,.20) 0 2px, transparent 3px), linear-gradient(35deg, transparent 48%, rgba(255,255,255,.09) 49% 50%, transparent 51%)", size:"90px 76px"},
-                    plus: {image:"linear-gradient(rgba(255,255,255,.12) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.12) 2px, transparent 2px)", size:"18px 18px"}
+                    diagonal: {image:"repeating-linear-gradient(135deg, rgba(255,255,255,.055) 0 2px, transparent 2px 38px)", size:"38px 38px"},
+                    grid: {image:"linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px)", size:"64px 64px"},
+                    waves: {image:"radial-gradient(ellipse at 50% 0%, transparent 0 46%, rgba(255,255,255,.05) 47% 49%, transparent 50%)", size:"120px 70px"},
+                    nodes: {image:"radial-gradient(circle, rgba(255,255,255,.08) 0 2px, transparent 3px), linear-gradient(35deg, transparent 48%, rgba(255,255,255,.04) 49% 50%, transparent 51%)", size:"90px 76px"},
+                    plus: {image:"linear-gradient(rgba(255,255,255,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,.05) 2px, transparent 2px)", size:"18px 18px"}
                 };
 
                 const overlay = thumbnail.querySelector(".background_image");
@@ -672,7 +705,7 @@
                         overlay.style.backgroundImage = 'url("./patterns/actionesia-pattern-' + patternNumber + '.svg")';
                         overlay.style.backgroundSize = "100% 100%";
                         overlay.style.backgroundRepeat = "no-repeat";
-                        overlay.style.opacity = "0.14";
+                        overlay.style.opacity = "0.055";
                         overlay.style.filter = "invert(1)";
                     }
                 } else if (cssPatterns[resolved]) {
