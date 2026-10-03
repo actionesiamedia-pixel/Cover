@@ -186,8 +186,17 @@
                         <option value="nodes">Dots & Connections</option>
                         <option value="plus">Plus Pattern</option>
                         <option value="custom-01">Pattern Tambahan 01</option>
+                        <option value="custom-02">Pattern Tambahan 02</option>
+                        <option value="custom-03">Pattern Tambahan 03</option>
+                        <option value="custom-04">Pattern Tambahan 04</option>
+                        <option value="custom-05">Pattern Tambahan 05</option>
+                        <option value="custom-06">Pattern Tambahan 06</option>
+                        <option value="custom-07">Pattern Tambahan 07</option>
+                        <option value="custom-08">Pattern Tambahan 08</option>
+                        <option value="custom-09">Pattern Tambahan 09</option>
+                        <option value="custom-10">Pattern Tambahan 10</option>
                     </select>
-                    <div class="mt-2 text-xs text-gray-500">Pattern Tambahan 01 memakai file SVG buatanmu dan otomatis dibuat putih/transparan di atas warna kategori.</div>
+                    <div class="mt-2 text-xs text-gray-500">Pattern Tambahan 01–10 memakai file SVG buatanmu dan otomatis dibuat putih/transparan di atas warna kategori.</div>
                 </div>
                 </div>
 
@@ -443,12 +452,12 @@
 
                 // Original 900x506 cover coordinates.
                 ctx.font = '700 20px Arial, sans-serif';
-                ctx.fillText(label, 80, 76);
+                ctx.fillText(label, 40, 40);
 
                 const labelWidth = ctx.measureText(label).width;
                 ctx.save();
                 ctx.shadowColor = "transparent";
-                ctx.fillRect(80, 106, labelWidth, 2);
+                ctx.fillRect(40, 70, labelWidth, 2);
                 ctx.restore();
 
                 // Match the original preview's px-52 title area:
@@ -492,7 +501,7 @@
                 // Bottom-right site.
                 ctx.font = '700 18px Arial, sans-serif';
                 const siteWidth = ctx.measureText(site).width;
-                ctx.fillText(site, W - 84 - siteWidth, H - 76 - 22);
+                ctx.fillText(site, W - 40 - siteWidth, H - 40 - 22);
 
                 canvas.toBlob(function (blob) {
                     const url = URL.createObjectURL(blob);
@@ -506,8 +515,9 @@
                 }, "image/png");
             }
 
-            // User-supplied SVG pattern. Keep original geometry; recolor to white on an offscreen canvas.
-            if (resolvedPattern === "custom-01") {
+            // User-supplied SVG patterns. Keep original 900x506 geometry; recolor to white.
+            if (/^custom-\d{2}$/.test(resolvedPattern)) {
+                const patternNumber = resolvedPattern.slice(-2);
                 const img = new Image();
                 img.onload = function () {
                     const off = document.createElement("canvas");
@@ -524,7 +534,7 @@
                     finish();
                 };
                 img.onerror = finish;
-                img.src = "./patterns/actionesia-pattern-01.svg";
+                img.src = "./patterns/actionesia-pattern-" + patternNumber + ".svg";
             } else if (bgUrlMatch && bgStyle.display !== "none" && bgStyle.visibility !== "hidden") {
                 const img = new Image();
                 img.crossOrigin = "anonymous";
@@ -633,12 +643,13 @@
                     overlay.style.backgroundImage = "none";
                     overlay.style.filter = "none";
                 }
-                if (resolved === "custom-01") {
+                if (/^custom-\d{2}$/.test(resolved)) {
+                    const patternNumber = resolved.slice(-2);
                     thumbnail.style.backgroundImage = "none";
                     thumbnail.style.backgroundSize = "";
                     if (overlay) {
                         overlay.style.display = "block";
-                        overlay.style.backgroundImage = 'url("./patterns/actionesia-pattern-01.svg")';
+                        overlay.style.backgroundImage = 'url("./patterns/actionesia-pattern-' + patternNumber + '.svg")';
                         overlay.style.backgroundSize = "100% 100%";
                         overlay.style.backgroundRepeat = "no-repeat";
                         overlay.style.opacity = "0.14";
