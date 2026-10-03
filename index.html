@@ -229,7 +229,7 @@
             <h2 class="mb-2 text-lg font-bold">Render Results:</h2>
             <div class="thumbnail_containers relative mb-4 overflow-x-auto overflow-y-hidden">
                 <div class="thumbnail_container relative z-10 aspect-video h-[506.25px] w-[900px] select-none justify-center overflow-hidden bg-[#063D70] text-white">
-                    <div class="absolute top-0 flex w-full flex-row items-start justify-between px-[48px] pt-[48px] text-xl font-bold">
+                    <div class="absolute top-0 flex w-full flex-row items-start justify-between px-20 pt-20 text-xl font-bold">
                         <div class="flex w-auto flex-col items-start justify-center">
                             <div id="post_label" class="max-w-[145px] break-words leading-6 [text-shadow:4px_2px_5px_rgba(0,0,0,0.2)]" style="display:inline-block; border-bottom:2px solid currentColor; padding-bottom:6px;">Label</div>
                             
@@ -241,7 +241,7 @@
                         <div id="post_title" class="max-h[444px] text-ellipsis break-words px-52 text-[44px] font-bold leading-[1.2] [text-shadow:4px_2px_5px_rgba(0,0,0,0.2)]">This is an example of a Post Title with 4 lines of words. Maximum is 5 lines.</div>
                     </div>
 
-                    <div class="absolute bottom-0 flex w-full flex-row items-end justify-end px-[48px] pb-[48px] text-lg font-bold">
+                    <div class="absolute bottom-0 flex w-full flex-row items-end justify-end px-20 pb-20 text-lg font-bold">
                         <div id="post_author" class="hidden">Post Author Name</div>
                         <div id="blog_title" class="whitespace-nowrap text-end leading-6 [text-shadow:4px_2px_5px_rgba(0,0,0,0.2)]">www.actionesia.id</div>
                     </div>
@@ -452,13 +452,12 @@
 
                 // Original 900x506 cover coordinates.
                 ctx.font = '700 20px Arial, sans-serif';
-                ctx.save();
-                ctx.textBaseline = "top";
-                ctx.fillText(label, 48, 48);
+                ctx.fillText(label, 40, 40);
 
                 const labelWidth = ctx.measureText(label).width;
+                ctx.save();
                 ctx.shadowColor = "transparent";
-                ctx.fillRect(48, 78, labelWidth, 2);
+                ctx.fillRect(40, 70, labelWidth, 2);
                 ctx.restore();
 
                 // Match the original preview's px-52 title area:
@@ -502,10 +501,7 @@
                 // Bottom-right site.
                 ctx.font = '700 18px Arial, sans-serif';
                 const siteWidth = ctx.measureText(site).width;
-                ctx.save();
-                ctx.textBaseline = "bottom";
-                ctx.fillText(site, W - 48 - siteWidth, H - 48);
-                ctx.restore();
+                ctx.fillText(site, W - 40 - siteWidth, H - 40 - 22);
 
                 canvas.toBlob(function (blob) {
                     const url = URL.createObjectURL(blob);
